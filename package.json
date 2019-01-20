@@ -1,0 +1,14 @@
+{
+  "name": "@signalk/udp-nmea-plugin",
+  "version": "1.0.0",
+  "description": "UDP NMEA0183 Sender",
+  "main": "index.js",
+  "keywords": [
+    "signalk-node-server-plugin"
+  ],
+  "author": "Teppo Kurki <teppo.kurki@iki.fi> (https://github.com/tkurki)",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "netmask": "^1.0.6"
+  }
+}
