@@ -18,9 +18,9 @@ module.exports = function (app) {
         })
         send = message =>
           socket.send(
-            message,
+            message+"\n",
             0,
-            message.length,
+            message.length+1,
             options.port,
             options.ipaddress
           )
