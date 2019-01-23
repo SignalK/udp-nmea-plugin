@@ -4,37 +4,60 @@ const { Netmask } = require('netmask')
 
 const pkgData = require('./package.json')
 
+const DELIMITERS = {
+  None: '',
+  CRLF: '\r\n',
+  LF: '\n'
+}
+
 module.exports = function (app) {
-  let send
   let socket
+  let onStop = []
 
   return {
     start: options => {
-      const address = options.broadcastAddress || options.address
+      const address = options.ipaddress || options.broadcastAddress
+      console.log(address)
       if (address && address != '-') {
         socket = dgram.createSocket('udp4')
         socket.bind(options.ipaddress, function () {
           socket.setBroadcast(true)
         })
-        send = message =>
+
+        console.log(options.lineDelimiter)
+        const delimiter = DELIMITERS[options.lineDelimiter] || ''
+        console.log(delimiter.length)
+        const send = message => {
+          const msg = `${message}${delimiter}`
           socket.send(
-            message,
+            msg,
             0,
-            message.length,
+            msg.length,
             options.port,
             options.ipaddress
           )
-        app.signalk.on('nmea0183', send)
-        app.setProviderStatus(`Using address ${address  }`)
+        }
+        console.log(options)
+        if (typeof options.nmea0183 === 'undefined' || options.nmea0183) {
+          app.signalk.on('nmea0183', send)
+          onStop.push(() => {
+            app.signalk.removeListener('nmea0183', send)
+          })
+        }
+        if (typeof options.nmea0183out === 'undefined' || options.nmea0183) {
+          app.on('nmea0183out', send)
+          onStop.push(() => {
+            app.removeListener('nmea0183out', send)
+          })
+        }
+        app.setProviderStatus(`Using address ${address}`)
       } else {
         app.setProviderError('No address specified')
       }
     },
     stop: () => {
-      if (send) {
-        app.signalk.removeListener('nmea0183', send)
-        send = undefined
-      }
+      onStop.forEach(f => f())
+      onStop = []
       if (socket) {
         socket.close()
         socket = undefined
@@ -63,6 +86,22 @@ function schema () {
         type: 'number',
         title: 'Port',
         default: 2000
+      },
+      nmea0183: {
+        type: 'boolean',
+        title: 'Use server event nmea0183',
+        default: true
+      },
+      nmea0183out: {
+        type: 'boolean',
+        title: 'Use server event nmea0183out',
+        default: true
+      },
+      lineDelimiter: {
+        type: 'string',
+        title: 'Line delimiter',
+        enum: ['None', 'LF', 'CRLF'],
+        default: 'None'
       }
     }
   }
