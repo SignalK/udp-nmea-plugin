@@ -16,22 +16,19 @@ module.exports = function (app) {
 
   return {
     start: options => {
+      app.debug(options)
       const address = options.ipaddress || options.broadcastAddress
-      console.log(address)
       if (address && address != '-') {
         socket = dgram.createSocket('udp4')
         socket.bind(address, function () {
           socket.setBroadcast(true)
         })
 
-        console.log(options.lineDelimiter)
         const delimiter = DELIMITERS[options.lineDelimiter] || ''
-        console.log(delimiter.length)
         const send = message => {
           const msg = `${message}${delimiter}`
           socket.send(msg, 0, msg.length, options.port, address)
         }
-        console.log(options)
         if (typeof options.nmea0183 === 'undefined' || options.nmea0183) {
           app.signalk.on('nmea0183', send)
           onStop.push(() => {
