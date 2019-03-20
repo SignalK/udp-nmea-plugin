@@ -1,6 +1,6 @@
 {
   "name": "@signalk/udp-nmea-plugin",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "UDP NMEA0183 Sender",
   "main": "index.js",
   "keywords": [
