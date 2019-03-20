@@ -44,7 +44,7 @@ module.exports = function (app) {
             app.signalk.removeListener('nmea0183', send)
           })
         }
-        if (typeof options.nmea0183out === 'undefined' || options.nmea0183) {
+        if (typeof options.nmea0183out === 'undefined' || options.nmea0183out) {
           app.on('nmea0183out', send)
           onStop.push(() => {
             app.removeListener('nmea0183out', send)
