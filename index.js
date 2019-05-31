@@ -120,5 +120,6 @@ function getBroadcastAddresses () {
       }
     })
   })
-  return result
+  const uniq_results = [ ...new Set(result) ]
+  return uniq_results
 }
