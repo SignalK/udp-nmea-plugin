@@ -41,6 +41,12 @@ module.exports = function (app) {
             app.removeListener('nmea0183out', send)
           })
         }
+        if (Array.isArray(options.additionalEvents)) {
+          options.additionalEvents.forEach(event => {
+            app.on(event, send)
+            onStop.push(() => app.removeListener(event, send))
+          })
+        }
         app.setProviderStatus(`Using address ${address}`)
       } else {
         app.setProviderError('No address specified')
@@ -87,6 +93,13 @@ function schema () {
         type: 'boolean',
         title: 'Use server event nmea0183out',
         default: true
+      },
+      additionalEvents: {
+        type: 'array',
+        title: 'Additional events whose data should be sent',
+        items: {
+          type: 'string',
+        },
       },
       lineDelimiter: {
         type: 'string',
