@@ -13,7 +13,8 @@ const DELIMITERS = {
 module.exports = function (app) {
   let socket
   let onStop = []
-
+  const setStatus = app.setPluginStatus || app.setProviderStatus
+  const setStatusError = app.setPluginError || app.setProviderError
   return {
     start: options => {
       app.debug(options)
@@ -47,9 +48,9 @@ module.exports = function (app) {
             onStop.push(() => app.removeListener(event, send))
           })
         }
-        app.setProviderStatus(`Using address ${address}`)
+        setStatus(`Using address ${address}`)
       } else {
-        app.setProviderError('No address specified')
+        setStatusError('No address specified')
       }
     },
     stop: () => {
