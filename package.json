@@ -9,6 +9,6 @@
   "author": "Teppo Kurki <teppo.kurki@iki.fi> (https://github.com/tkurki)",
   "license": "Apache-2.0",
   "dependencies": {
-    "netmask": "^1.0.6"
+    "netmask": "^2.0.1"
   }
 }
