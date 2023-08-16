@@ -1,51 +1,70 @@
-const dgram = require('dgram')
-const os = require('os')
-const { Netmask } = require('netmask')
+import dgram = require('dgram')
+import os = require('os')
+import { Netmask } from 'netmask'
+import { ServerAPI } from '@signalk/server-api'
 
-const pkgData = require('./package.json')
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const pkgData = require('../package.json')
 
-const DELIMITERS = {
+const DELIMITERS: { [key: string]: string } = {
   None: '',
   CRLF: '\r\n',
   LF: '\n',
 }
+type OnStopHandler = () => void
 
-module.exports = function (app) {
-  let socket
-  let onStop = []
-  const setStatus = app.setPluginStatus || app.setProviderStatus
-  const setStatusError = app.setPluginError || app.setProviderError
+type UdpPluginOptions = {
+  ipaddress?: string
+  broadcastAddress?: string
+  port: string
+  lineDelimiter?: string
+  nmea0183?: boolean
+  nmea0183out?: string
+  additionalEvents?: string
+}
+
+module.exports = function (app: ServerAPI) {
+  let socket: dgram.Socket
+  let onStop = new Array<OnStopHandler>()
+  const setStatus = app.setPluginStatus
+  const setStatusError = app.setPluginError
   return {
-    start: options => {
-      app.debug(options)
+    start: (options: UdpPluginOptions) => {
+      app.debug(JSON.stringify(options))
       const address = options.ipaddress || options.broadcastAddress
       if (address && address != '-') {
         socket = dgram.createSocket('udp4')
-        socket.bind(address, function () {
+        socket.bind(Number(address), function () {
           socket.setBroadcast(true)
         })
 
-        const delimiter = DELIMITERS[options.lineDelimiter] || ''
-        const send = message => {
+        const delimiter = DELIMITERS[options.lineDelimiter || ''] || ''
+        const send = (message: string) => {
           const msg = `${message}${delimiter}`
-          socket.send(msg, 0, msg.length, options.port, address)
+          socket.send(msg, 0, msg.length, Number(options.port), address)
         }
         if (typeof options.nmea0183 === 'undefined' || options.nmea0183) {
-          app.signalk.on('nmea0183', send)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (app as any).signalk.on('nmea0183', send)
           onStop.push(() => {
-            app.signalk.removeListener('nmea0183', send)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (app as any).signalk.removeListener('nmea0183', send)
           })
         }
         if (typeof options.nmea0183out === 'undefined' || options.nmea0183out) {
-          app.on('nmea0183out', send)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (app as any).on('nmea0183out', send)
           onStop.push(() => {
-            app.removeListener('nmea0183out', send)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (app as any).removeListener('nmea0183out', send)
           })
         }
         if (Array.isArray(options.additionalEvents)) {
           options.additionalEvents.forEach(event => {
-            app.on(event, send)
-            onStop.push(() => app.removeListener(event, send))
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (app as any).on(event, send)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onStop.push(() => (app as any).removeListener(event, send))
           })
         }
         setStatus(`Using address ${address}`)
@@ -113,7 +132,7 @@ function schema() {
 }
 
 function getBroadcastAddresses() {
-  const result = []
+  const result: string[] = []
   const ifaces = os.networkInterfaces()
   Object.keys(ifaces).forEach(id => {
     ifaces[id].forEach(addressInfo => {
