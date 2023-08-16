@@ -16,7 +16,7 @@
   "author": "Teppo Kurki <teppo.kurki@iki.fi> (https://github.com/tkurki)",
   "license": "Apache-2.0",
   "scripts": {
-    "dev": "tsc --watch",
+    "watch": "tsc --watch",
     "build": "tsc",
     "lint": "eslint --ext .js,.ts .",
     "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\""
