@@ -7,7 +7,7 @@ const pkgData = require('./package.json')
 const DELIMITERS = {
   None: '',
   CRLF: '\r\n',
-  LF: '\n'
+  LF: '\n',
 }
 
 module.exports = function (app) {
@@ -63,37 +63,37 @@ module.exports = function (app) {
     },
     schema,
     id: 'udp-nmea-sender',
-    name: pkgData.description
+    name: pkgData.description,
   }
 }
 
-function schema () {
+function schema() {
   return {
     type: 'object',
     properties: {
       ipaddress: {
         type: 'string',
-        title: 'IP Address (overrides broadcast address if entered)'
+        title: 'IP Address (overrides broadcast address if entered)',
       },
       broadcastAddress: {
         type: 'string',
         enum: ['-'].concat(getBroadcastAddresses()),
-        default: '-'
+        default: '-',
       },
       port: {
         type: 'number',
         title: 'Port',
-        default: 2000
+        default: 2000,
       },
       nmea0183: {
         type: 'boolean',
         title: 'Use server event nmea0183',
-        default: true
+        default: true,
       },
       nmea0183out: {
         type: 'boolean',
         title: 'Use server event nmea0183out',
-        default: true
+        default: true,
       },
       additionalEvents: {
         type: 'array',
@@ -106,25 +106,25 @@ function schema () {
         type: 'string',
         title: 'Line delimiter',
         enum: ['None', 'LF', 'CRLF'],
-        default: 'None'
-      }
-    }
+        default: 'None',
+      },
+    },
   }
 }
 
-function getBroadcastAddresses () {
+function getBroadcastAddresses() {
   const result = []
   const ifaces = os.networkInterfaces()
   Object.keys(ifaces).forEach(id => {
     ifaces[id].forEach(addressInfo => {
       if (addressInfo.family === 'IPv4' && !addressInfo.internal) {
         const block = new Netmask(
-          `${addressInfo.address}/${addressInfo.netmask}`
+          `${addressInfo.address}/${addressInfo.netmask}`,
         )
         result.push(block.broadcast)
       }
     })
   })
-  const uniq_results = [ ...new Set(result) ]
+  const uniq_results = [...new Set(result)]
   return uniq_results
 }
