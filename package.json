@@ -2,7 +2,7 @@
   "name": "@signalk/udp-nmea-plugin",
   "version": "1.2.2",
   "description": "UDP NMEA0183 Sender",
-  "main": "index.js",
+  "main": "dist/index.js",
   "keywords": [
     "signalk-node-server-plugin"
   ],
@@ -25,6 +25,9 @@
     "netmask": "^2.0.1"
   },
   "devDependencies": {
+    "@signalk/server-api": "^2.1.0",
+    "@types/netmask": "^2.0.2",
+    "@types/node": "^20.5.0",
     "@typescript-eslint/eslint-plugin": "^6.4.0",
     "@typescript-eslint/parser": "^6.4.0",
     "eslint": "^8.47.0",
