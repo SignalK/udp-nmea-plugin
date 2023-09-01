@@ -6,6 +6,13 @@
   "keywords": [
     "signalk-node-server-plugin"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SignalK/udp-nmea-plugin.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SignalK/udp-nmea-plugin/issues"
+  },
   "author": "Teppo Kurki <teppo.kurki@iki.fi> (https://github.com/tkurki)",
   "license": "Apache-2.0",
   "scripts": {
