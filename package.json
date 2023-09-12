@@ -18,6 +18,7 @@
   "scripts": {
     "watch": "tsc --watch",
     "build": "tsc",
+    "prepublishOnly": "npm run build",
     "lint": "eslint --ext .js,.ts .",
     "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\""
   },
